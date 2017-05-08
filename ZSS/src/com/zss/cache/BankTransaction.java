@@ -1,14 +1,24 @@
 package com.zss.cache;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
 
-public class BankTransaction {
+import com.zss.utility.ZSSCache;
+
+public class BankTransaction implements DateCapable{
 
 	@Override
 	public String toString() {
-		return "BankTransaction [date=" + date + ", description=" + description + ", chequeNumber=" + chequeNumber
-				+ ", mode=" + mode + ", withdrawal=" + withdrawal + ", credit=" + credit + ", balance=" + balance + "]";
+		return "BankTransaction [date=" + ((date == null) ? null : ZSSCache.dateFormat.format(date)) + ", description=" + description 
+				+ ", chequeNumber=" + chequeNumber
+				+ ", mode=" + mode + ", withdrawal=" + getFormattedCurrency(withdrawal) + ", credit=" + getFormattedCurrency(credit)
+				+ ", balance=" + getFormattedCurrency(balance) + "]";
+	}
+	
+	String getFormattedCurrency(BigDecimal amount) {
+		return NumberFormat.getInstance(new Locale("en", "in")).format(amount);
 	}
 
 	private Date date;
@@ -73,5 +83,10 @@ public class BankTransaction {
 
 	public void setBalance(BigDecimal openingBalance) {
 		this.balance = openingBalance.add(credit).subtract(withdrawal);
+	}
+
+	@Override
+	public BigDecimal getAmount() {
+		return getCredit();
 	}
 }

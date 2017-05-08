@@ -16,12 +16,14 @@ public class MaintenanceSheet implements Comparable{
 		private String remainingBalance;
 		private String date;
 		private String receiptNo;
+		private String description = ""; 
+		private String paymentMode = "Cash"; 
 		
 		public MaintenanceSheet(String flatNo, String wing, String owner,
 				String openingBalance, String maintenance,
 				String totalOutstandingBalance, String penalty,
 				String receivedMCharge, String remainingBalance, String date,
-				String receiptNo) {
+				String receiptNo, String paymentMode) {
 			super();
 			this.flatNo = flatNo;
 			this.wing = wing;
@@ -32,9 +34,42 @@ public class MaintenanceSheet implements Comparable{
 			this.penalty = penalty;
 			this.receivedMCharge = receivedMCharge;
 			//this.remainingBalance = remainingBalance;
+			if(date.contains(";@")) {
+				date = date.replace(";@", "");
+			}
 			this.date = date;
 			this.receiptNo = receiptNo;
+			if(paymentMode != null){
+				this.setPaymentMode(paymentMode);
+			}
 			evaluateDyanmic();
+			computeDescription();
+		}
+
+		private void computeDescription() {
+			/*if(this.receivedMCharge != null && Integer.parseInt(this.receivedMCharge) > 0 ) {
+				setDescription("By Cash");
+				if(Integer.parseInt(this.receivedMCharge) > 2000)
+					System.out.println("#### Integer.parseInt(receivedMCharge)" + Integer.parseInt(this.receivedMCharge) + "(-1 * Integer.parseInt(remainingBalance) )" + (-1 * Integer.parseInt(this.remainingBalance) ));
+				if(this.remainingBalance != null && Integer.parseInt(this.remainingBalance) < 0 && Integer.parseInt(this.receivedMCharge) == (-1 * Integer.parseInt(this.remainingBalance) )) {
+					setDescription("By Cheque");
+				}
+			}*/
+			
+			switch (getPaymentMode()) {
+			case "Cheque":
+				setDescription("By " + getPaymentMode());
+				break;
+
+			default:
+				setDescription("By " + getPaymentMode());
+				break;
+			}
+
+			
+			if(this.penalty != null && Integer.parseInt(this.penalty) > 0 ) {
+				setDescription("Penalty");
+			}
 		}
 
 		private void evaluateDyanmic() {
@@ -134,6 +169,22 @@ public class MaintenanceSheet implements Comparable{
 			this.receiptNo = receiptNo;
 		}
 
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public String getPaymentMode() {
+			return paymentMode;
+		}
+
+		public void setPaymentMode(String paymentMode) {
+			this.paymentMode = paymentMode;
+		}
+
 		@Override
 		public String toString() {
 			return "MaintenanceSheet [wing=" + wing +", flatNo=" + flatNo + ", owner=" + owner
@@ -142,12 +193,13 @@ public class MaintenanceSheet implements Comparable{
 					+ totalOutstandingBalance + ", penalty=" + penalty
 					+ ", receivedMCharge=" + receivedMCharge
 					+ ", remainingBalance=" + remainingBalance + ", date="
-					+ date + ", receiptNo=" + receiptNo + "]";
+					+ date + ", receiptNo=" + receiptNo + ", description=" + getDescription() 
+					+ ", paymentMode=" + getPaymentMode() + "]";
 		}
 
 		@Override
 		public int compareTo(Object arg0) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yy");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
 			Date date1=null, date2=null;
 			try {
 				if(this.getDate().startsWith("/")) 

@@ -13,15 +13,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class DataParser {
 
 	private static final Logger log = Logger.getLogger(DataParser.class);
-	private static String DIRECTORY_PATH="C:\\Users\\arathod\\Desktop\\Purva Vihar\\FY2014-15\\";
+	private static String DIRECTORY_PATH="";
 	
-	public static void loadWorkbook(String fileName, boolean loadToCache) {
+	public static void loadWorkbook(String fileName) {
 		
 		int SHEET_COUNT = 0;
 		Workbook workbook = null;
 		FileInputStream fileInputStream = null;
+		String pathname = getDIRECTORY_PATH();
 		try {
-			File file = new File(getDIRECTORY_PATH() + fileName); 
+			pathname += fileName;
+			File file = new File(pathname); 
 			fileInputStream = new FileInputStream(file);
 			if(file.exists() && file.getName().toLowerCase().endsWith("xlsx")){
 				workbook=new XSSFWorkbook(fileInputStream);
@@ -29,9 +31,9 @@ public class DataParser {
 				workbook = new HSSFWorkbook(fileInputStream);
 			}
 		} catch (FileNotFoundException e) {
-			log.error("File Not Exist: ", e);
+			log.error("File Not Exist @: " + pathname + " :\n", e);
 		} catch (IOException e) {
-			log.error("Error while reading file:", e);
+			log.error("Error while reading file @: " + pathname + " :\n", e);
 		} finally{
 			if(workbook!=null){
 				WorkbookCache.INSTANCE.addWorkbook(fileName, workbook);
